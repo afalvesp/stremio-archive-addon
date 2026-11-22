@@ -151,7 +151,7 @@ app.get('/manifest.json', (req, res) => {
 // Configured Resource with extra query parameters (e.g. /:config/catalog/movie/archive_movies/skip=24.json)
 app.get('/:config/:resource/:type/:id/:extra.json', async (req, res, next) => {
   const { resource, type, id, config: rawConfig, extra: rawExtra } = req.params;
-  if (!['catalog', 'stream'].includes(resource)) return next();
+  if (!['catalog', 'meta', 'stream'].includes(resource)) return next();
 
   const config = parseConfig(rawConfig);
   let extra = {};
@@ -173,7 +173,7 @@ app.get('/:config/:resource/:type/:id/:extra.json', async (req, res, next) => {
 // Configured Resource without extra (e.g. /:config/stream/movie/Night.Of.The.Living.Dead_1080p.json)
 app.get('/:config/:resource/:type/:id.json', async (req, res, next) => {
   const { resource, type, id, config: rawConfig } = req.params;
-  if (!['catalog', 'stream'].includes(resource)) return next();
+  if (!['catalog', 'meta', 'stream'].includes(resource)) return next();
 
   const config = parseConfig(rawConfig);
 
@@ -191,7 +191,7 @@ app.get('/:config/:resource/:type/:id.json', async (req, res, next) => {
 // Unconfigured Resource with extra (e.g. /catalog/movie/archive_movies/search=charade.json)
 app.get('/:resource/:type/:id/:extra.json', async (req, res, next) => {
   const { resource, type, id, extra: rawExtra } = req.params;
-  if (!['catalog', 'stream'].includes(resource)) return next();
+  if (!['catalog', 'meta', 'stream'].includes(resource)) return next();
 
   let extra = {};
   if (rawExtra) {
@@ -212,7 +212,7 @@ app.get('/:resource/:type/:id/:extra.json', async (req, res, next) => {
 // Unconfigured Resource without extra (e.g. /stream/movie/Night.Of.The.Living.Dead_1080p.json)
 app.get('/:resource/:type/:id.json', async (req, res, next) => {
   const { resource, type, id } = req.params;
-  if (!['catalog', 'stream'].includes(resource)) return next();
+  if (!['catalog', 'meta', 'stream'].includes(resource)) return next();
 
   try {
     const resp = await addonInterface.get(resource, type, id, {}, {});

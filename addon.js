@@ -65,6 +65,18 @@ const builder = new addonBuilder(manifest);
 builder.defineCatalogHandler(async (args) => {
   const { type, id, extra = {}, config = {} } = args;
   console.log(`[Addon] Catalog request received: type=${type}, id=${id}, extra=${JSON.stringify(extra)}`);
+    if (type === 'series' && id === 'huntik_ptpt') {
+    return {
+      metas: [{
+        id: 'huntik-ptpt',
+        type: 'series',
+        name: 'Huntik (PT-PT)',
+        poster: 'https://archive.org/services/img/huntik-temporada-1',
+        posterShape: 'poster',
+        description: 'Huntik — série dobrada em português europeu (PT-PT).'
+      }]
+    };
+  }
 
   const skip = parseInt(extra.skip || 0, 10);
   const rows = 24;

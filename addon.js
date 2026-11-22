@@ -14,7 +14,7 @@ const manifest = {
   logo: 'https://archive.org/images/glogo.jpg',
   background: 'https://archive.org/services/img/NightOfTheLivingDeadTrailer',
   // Strict compliance with Requirement 4
-  resources: ['catalog', 'stream'],
+  resources: ['catalog', 'meta', 'stream'],
   types: ['movie', 'series', 'other'],
   catalogs: [
     {
@@ -43,6 +43,11 @@ const manifest = {
         { name: 'search', isRequired: false },
         { name: 'skip', isRequired: false }
       ]
+    }
+    {
+      type: 'series',
+      id: 'huntik_ptpt',
+      name: 'Huntik (PT-PT)'
     }
   ],
   behaviorHints: {

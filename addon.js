@@ -223,8 +223,37 @@ builder.defineStreamHandler(async (args) => {
     return { streams: [] };
   }
 
+  
   try {
+    const huntikMatch = /^huntik:(1|2):(\d+)$/.exec(id);
+
+    if (huntikMatch) {
+      const seasonNumber = Number(huntikMatch[1]);
+      const episodeNumber = Number(huntikMatch[2]);
+
+      const identifier = `huntik-temporada-${seasonNumber}`;
+
+      const fileName = `HUNTIK T${String(seasonNumber).padStart(2, '0')} EP${String(episodeNumber).padStart(2, '0')}.mp4`;
+
+      const allStreams = await archiveClient.getStreamsForIdentifier(
+        identifier,
+        config,
+        `Huntik T${seasonNumber} E${episodeNumber}`
+      );
+
+      const targetSuffix = `/${encodeURIComponent(fileName)}`;
+
+      const episodeStreams = allStreams.filter(stream =>
+        stream.url && stream.url.endsWith(targetSuffix)
+      );
+
+      console.log(`[Huntik] Temporada ${seasonNumber}, episódio ${episodeNumber}: ${episodeStreams.length} stream(s)`);
+
+      return { streams: episodeStreams };
+    }
+
     const streams = await archiveClient.resolveStreams(type, id, config);
+
     console.log(`[Addon] Found ${streams.length} streams for ${id}`);
     return { streams };
   } catch (err) {

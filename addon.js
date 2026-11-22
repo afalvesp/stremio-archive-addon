@@ -144,6 +144,77 @@ builder.defineCatalogHandler(async (args) => {
  * Stream Handler: /stream/:type/:id.json
  * Resolves streamable video URLs using Archive.org Metadata API with user authentication.
  */
+
+/**
+ * Meta Handler: episódios de Huntik em PT-PT
+ */
+builder.defineMetaHandler(async ({ type, id, config = {} }) => {
+  if (type !== 'series' || id !== 'huntik-ptpt') {
+    return { meta: null };
+  }
+
+  try {
+    const seasons = [
+      { number: 1, identifier: 'huntik-temporada-1' },
+      { number: 2, identifier: 'huntik-temporada-2' }
+    ];
+
+    const videos = [];
+
+    for (const season of seasons) {
+      const data = await archiveClient.getMetadata(
+        season.identifier,
+        config
+      );
+
+      if (!data || !Array.isArray(data.files)) {
+        continue;
+      }
+
+      const prefix = `HUNTIK T${String(season.number).padStart(2, '0')} EP`;
+
+      const episodes = data.files
+        .filter(file => {
+          const name = file.name || '';
+          return new RegExp(
+            `^${prefix}(\\d+)\\.mp4$`,
+            'i'
+          ).test(name);
+        })
+        .map(file => {
+          const match = file.name.match(/EP(\d+)\.mp4$/i);
+          return match ? Number(match[1]) : null;
+        })
+        .filter(number => number !== null)
+        .sort((a, b) => a - b);
+
+      for (const episode of episodes) {
+        videos.push({
+          id: `huntik:${season.number}:${episode}`,
+          title: `Episódio ${episode}`,
+          season: season.number,
+          episode
+        });
+      }
+    }
+
+    return {
+      meta: {
+        id: 'huntik-ptpt',
+        type: 'series',
+        name: 'Huntik (PT-PT)',
+        poster: 'https://archive.org/services/img/huntik-temporada-1',
+        posterShape: 'poster',
+        description: 'Huntik — dobragem em português europeu.',
+        videos
+      }
+    };
+  } catch (error) {
+    console.error('[Huntik] Erro ao carregar episódios:', error);
+    return { meta: null };
+  }
+});
+
 builder.defineStreamHandler(async (args) => {
   const { type, id, config = {} } = args;
   console.log(`[Addon] Stream request received: type=${type}, id=${id}`);

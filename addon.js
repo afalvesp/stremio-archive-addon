@@ -43,7 +43,7 @@ const manifest = {
         { name: 'search', isRequired: false },
         { name: 'skip', isRequired: false }
       ]
-    }
+    },
     {
       type: 'series',
       id: 'huntik_ptpt',
